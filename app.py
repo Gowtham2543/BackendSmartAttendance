@@ -50,7 +50,7 @@ jsondecoder = json.JSONDecoder()
 
 @app.route("/", methods=['POST', 'GET'])
 def root():
-    return make_response(jsonify({'status' : "hiii"}), 200)
+    return make_response(jsonify({'status' : "Success"}), 200)
 
 def user_details(f):
     current_user = Admin.query.filter_by(user_name=f).first()
