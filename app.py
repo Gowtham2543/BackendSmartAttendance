@@ -5,6 +5,7 @@ from  werkzeug.security import generate_password_hash, check_password_hash
 import json
 import jwt
 import uuid
+import os
 
 from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,jwt_required,get_jwt_identity,get_jwt
 
@@ -18,8 +19,16 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
+
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username=os.getenv('USERNAME'),
+    password=os.getenv('PASSWORD'),
+    hostname=os.getenv('HOSTNAME'),
+    databasename=os.getenv('DATABASE'),
+)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://root:%s@localhost/smart' % quote_plus('bala')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://root:%s@localhost/smart' % quote_plus('1234')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqldb://root:%s@localhost/smart' % quote_plus('1234')
+app.config['SQLALCHEMYH_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = 'your secret key'
@@ -37,8 +46,6 @@ jsondecoder = json.JSONDecoder()
 @app.route("/", methods=['POST', 'GET'])
 def root():
     return make_response(jsonify({'status' : "Success"}), 200)
-
-
 
 def user_details(f):
     current_user = Admin.query.filter_by(user_name=f).first()
