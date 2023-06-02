@@ -14,7 +14,7 @@ from datetime import date,datetime,timedelta
 from functools import wraps
 from flask_cors import CORS
 
-from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
 
@@ -51,50 +51,50 @@ def employee_details(f):
 
 #   Employee Atendance Entry By APSCHEDULER
 
-scheduler = BackgroundScheduler(daemon = True)
+# scheduler = BackgroundScheduler(daemon = True)
 
-def employee_attendance():
-    with app.app_context():
-        employee_list_attendance = Attendance.query.all()
+# def employee_attendance():
+#     with app.app_context():
+#         employee_list_attendance = Attendance.query.all()
         
-        for attendance_chk in employee_list_attendance:
+#         for attendance_chk in employee_list_attendance:
         
-            today = date.today()
+#             today = date.today()
                 
-            attendance_per_chk = attendance_chk.day_attendance_present / (attendance_chk.day_attendance_present + attendance_chk.day_attendance_absent)
+#             attendance_per_chk = attendance_chk.day_attendance_present / (attendance_chk.day_attendance_present + attendance_chk.day_attendance_absent)
         
-            if attendance_per_chk*100<75:    
-                return  make_response(
-                jsonify({'status' : 'Absent..Because Below 75%'}),
-                200)
+#             if attendance_per_chk*100<75:    
+#                 return  make_response(
+#                 jsonify({'status' : 'Absent..Because Below 75%'}),
+#                 200)
             
-            if attendance_chk.out_duration>7200:
-                return  make_response(
-                jsonify({'status' : 'Absent..Out time more than 2hour'}),
-                200)
+#             if attendance_chk.out_duration>7200:
+#                 return  make_response(
+#                 jsonify({'status' : 'Absent..Out time more than 2hour'}),
+#                 200)
             
-            employee_chk = Employee.query.filter_by(emp_id=attendance_chk.emp_id).first()
-            month_attendance_update = Month_attendance.query.filter_by(emp_id=attendance_chk.emp_id).filter_by(month_number=attendance_chk.month).first()
-            month_chk = Working_days.query.filter_by(month_number=today.month).first()
-            if not month_chk:
-                return  make_response(
-                jsonify({'status' : 'No entry for workingday..!'}),
-                401)
+#             employee_chk = Employee.query.filter_by(emp_id=attendance_chk.emp_id).first()
+#             month_attendance_update = Month_attendance.query.filter_by(emp_id=attendance_chk.emp_id).filter_by(month_number=attendance_chk.month).first()
+#             month_chk = Working_days.query.filter_by(month_number=today.month).first()
+#             if not month_chk:
+#                 return  make_response(
+#                 jsonify({'status' : 'No entry for workingday..!'}),
+#                 401)
                 
-            attendance_perc=((month_attendance_update.days_present+1)/(month_chk.working_days_count))    
+#             attendance_perc=((month_attendance_update.days_present+1)/(month_chk.working_days_count))    
 
-            setattr(employee_chk,"current_attendance_percentage",attendance_perc)
-            setattr(month_attendance_update,"days_present",month_attendance_update.days_present+1)
-            db.session.commit()    
+#             setattr(employee_chk,"current_attendance_percentage",attendance_perc)
+#             setattr(month_attendance_update,"days_present",month_attendance_update.days_present+1)
+#             db.session.commit()    
             
-            db.session.delete(attendance_chk)
-            db.session.commit()
+#             db.session.delete(attendance_chk)
+#             db.session.commit()
         
-        print("Attendance..Updated..!")
+#         print("Attendance..Updated..!")
 
-job = scheduler.add_job(employee_attendance, 'cron', hour='15', minute='10',second='00')
+# job = scheduler.add_job(employee_attendance, 'cron', hour='15', minute='10',second='00')
 
-scheduler.start()
+# scheduler.start()
 
 
 #   Refresh
