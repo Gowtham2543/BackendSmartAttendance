@@ -110,7 +110,6 @@ def employee_details(f):
 
 
 #   Refresh
-
 @app.route("/update_server", methods=["POST"])
 def webhook():
     if request.method == "POST":
