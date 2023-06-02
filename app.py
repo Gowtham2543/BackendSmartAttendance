@@ -25,6 +25,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
+print(os.getenv('USERNAME'))
+print(os.getenv('PASSWORD'))
+print(os.getenv('HOSTNAME'))
+print(os.getenv('DATABASE'))
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username=os.getenv('USERNAME'),
