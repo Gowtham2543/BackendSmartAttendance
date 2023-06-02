@@ -25,6 +25,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
+
+print("hooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooiiiiiiiiiiii")
 print(os.getenv('USERNAME'))
 print(os.getenv('PASSWORD'))
 print(os.getenv('HOSTNAME'))
