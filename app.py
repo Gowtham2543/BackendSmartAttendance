@@ -16,6 +16,11 @@ from datetime import date,datetime,timedelta
 from functools import wraps
 from flask_cors import CORS
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 # from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
