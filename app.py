@@ -18,19 +18,12 @@ from flask_cors import CORS
 
 from dotenv import load_dotenv
 
-load_dotenv()
+print(load_dotenv())
 
 
 # from apscheduler.schedulers.background import BackgroundScheduler
 
 app = Flask(__name__)
-
-
-print("hooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooiiiiiiiiiiii")
-print(os.getenv('USERNAME'))
-print(os.getenv('PASSWORD'))
-print(os.getenv('HOSTNAME'))
-print(os.getenv('DATABASE'))
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username=os.getenv('USERNAME'),
@@ -121,7 +114,7 @@ def employee_details(f):
 @app.route("/update_server", methods=["POST"])
 def webhook():
     if request.method == "POST":
-        repo = git.Repo('path/to/git_repo')
+        repo = git.Repo('/home/crafty2543/BackendSmartAttendance')
         origin = repo.remotes.origin
         origin.pull()
         return 'Updated PythonAnywhere successfully', 200
