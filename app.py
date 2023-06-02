@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template ,make_response
+from flask import Flask, request, jsonify ,make_response
 from flask_sqlalchemy import SQLAlchemy
 from urllib.parse import quote_plus
 from  werkzeug.security import generate_password_hash, check_password_hash
@@ -6,6 +6,7 @@ import json
 import jwt
 import uuid
 import os
+import git
 
 from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,jwt_required,get_jwt_identity,get_jwt
 
@@ -105,7 +106,18 @@ def employee_details(f):
 
 
 #   Refresh
- 
+
+
+@app.route("/update_server", methods=["POST"])
+def webhook():
+    if request.method == "POST":
+        repo = git.Repo('path/to/git_repo')
+        origin = repo.remotes.origin
+        origin.pull()
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
+
 @app.route("/token/refresh" , methods = ['POST','GET'])
 @jwt_required(refresh=True)
 def token_refresh():
