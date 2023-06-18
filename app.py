@@ -287,10 +287,10 @@ def employee_details_update():
         
     data = request.form
     print(data)
-    if not data or not data.get('email') or not data.get('first_name') or not data.get('last_name') or not data.get('dob') or not data.get('designation') or not data.get('age'):
-        return make_response(
-            jsonify({"status" : "Fields missing"}),
-            401)
+    # if not data or not data.get('email') or not data.get('first_name') or not data.get('last_name') or not data.get('dob') or not data.get('designation') or not data.get('age'):
+    #     return make_response(
+    #         jsonify({"status" : "Fields missing"}),
+    #         401)
         
     first_name = data.get('first_name')
     last_name = data.get('last_name')
