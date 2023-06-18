@@ -287,6 +287,7 @@ def employee_details_update():
         
     data = request.form
     print(data)
+    print("Gowtham .....")
     # if not data or not data.get('email') or not data.get('first_name') or not data.get('last_name') or not data.get('dob') or not data.get('designation') or not data.get('age'):
     #     return make_response(
     #         jsonify({"status" : "Fields missing"}),
