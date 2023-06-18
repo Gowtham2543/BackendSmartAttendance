@@ -47,7 +47,6 @@ db.init_app(app)
 
 jsondecoder = json.JSONDecoder()
 
-
 @app.route("/", methods=['POST', 'GET'])
 def root():
     return make_response(jsonify({'status' : "Success"}), 200)
@@ -95,8 +94,8 @@ def employee_details(f):
                 
 #             attendance_perc=((month_attendance_update.days_present+1)/(month_chk.working_days_count))    
 
-#             setattr(employee_chk,"current_attendance_percentage",attendance_perc)
 #             setattr(month_attendance_update,"days_present",month_attendance_update.days_present+1)
+#             setattr(employee_chk,"current_attendance_percentage",attendance_perc)
 #             db.session.commit()    
             
 #             db.session.delete(attendance_chk)
@@ -110,16 +109,6 @@ def employee_details(f):
 
 
 #   Refresh
-@app.route("/update_server", methods=["POST"])
-def webhook():
-    if request.method == "POST":
-        repo = git.Repo('/home/crafty2543/BackendSmartAttendance')
-        origin = repo.remotes.origin
-        origin.pull()
-        return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
-
 @app.route("/token/refresh" , methods = ['POST','GET'])
 @jwt_required(refresh=True)
 def token_refresh():
@@ -285,6 +274,47 @@ def employee_details_insert():
             200)
 
 
+#   Employee Details Update 
+
+@app.route("/employee_details_update", methods = ['POST','GET'])
+@jwt_required()
+def employee_details_update():
+    current_user = user_details(get_jwt_identity())
+    if current_user.validity == 0:
+        return make_response(
+        jsonify({'status' : 'User Logged Out..Need to Login'}),
+        401)
+        
+    data = request.form
+
+    if not data or not data.get('email') or not data.get('firstName') or not data.get('lastName') or not data.get('dob') or not data.get('designation') or not data.get('age'):
+        return make_response(
+            jsonify({"status" : "Fields missing"}),
+            401)
+        
+    first_name = data.get('firstName')
+    last_name = data.get('lastName')
+    dob = data.get('dob')
+    age = data.get('age')
+    email = data.get('email')
+    designation = data.get('designation')
+    
+    user = Employee.query.filter_by(emp_id = data.get('empId')).first()
+    
+    setattr(user,"first_name",first_name)
+    setattr(user,"last_name",last_name)
+    setattr(user,"dob",dob)
+    setattr(user,"age",age)
+    setattr(user,"eamil",email)
+    setattr(user,"designation",designation)
+    
+    db.session.commit()
+        
+    return make_response(
+            jsonify({"status" : "Successfully Updated..."}),
+            200)
+
+    
 #   Employee Login App
 
 @app.route("/employee/login" , methods = ['POST','GET'])
@@ -452,29 +482,20 @@ def employee_select():
     
     #print(request.get_data())
     data = request.get_json()
-    #print(data)
+    print("***********",data)
     if not data or not data['employee_name'] or not data['designation']:
         return make_response(
             jsonify({"status" : "Fields missing"}),
             401)
         
     employee_details_search = Employee.query.filter_by(first_name=data['employee_name']).filter_by(designation=data['designation']).first()
-    
+    print("*******",employee_details_search.id)
     if not employee_details_search:
         return make_response(
             jsonify({"status" : "No Match Found..!"}),
             401)
         
     today = date.today()
-    
-    attendance_perc_chk = Attendance.query.filter_by(id=employee_details_search.id).filter_by(employee_name=employee_details_search.first_name).first()
-
-    attendance_perc = attendance_perc_chk.day_attendance_present
-        
-    month_chk = Working_days.query.filter_by(month_number=today.month).first()
-    print(attendance_perc)
-    attendance_perc=(attendance_perc/(month_chk.working_days_count))
-    print(attendance_perc)
     
     output={}
     output['emp_id']=employee_details_search.emp_id
@@ -484,7 +505,7 @@ def employee_select():
     output['age']=employee_details_search.age
     output['email']=employee_details_search.email
     output['designation']=employee_details_search.designation
-    output['attendance_percent']=str(attendance_perc)+"%"
+    output['attendance_percent']=str(employee_details_search.current_attendance_percentage)+"%"
     
     print(output)
     return output
@@ -566,20 +587,6 @@ def employee_details_select():
             401)
     
     
-    attendance_perc_chk = Attendance.query.filter_by(id=employee_details_search.id).filter_by(employee_name=employee_details_search.first_name).first()
-    print("///////////",attendance_perc_chk,attendance_perc_chk.employee_name)
-    
-    attendance_perc = attendance_perc_chk.day_attendance_present
-    # for i in attendance_perc_chk:
-    #     if i.day_attendance=="present":
-    #         attendance_perc+=1
-        
-    month_chk = Working_days.query.filter_by(month_number=today.month).first()
-    print(attendance_perc)
-    # attendance_perc=(attendance_perc/(month_chk.working_days_count))
-    attendance_perc=0
-    print(attendance_perc)
-    
     output = {}
     
     output['emp_id']=current_user.emp_id
@@ -589,7 +596,7 @@ def employee_details_select():
     output['age']=current_user.age
     output['email']=current_user.email
     output['designation']=current_user.designation
-    output['attendance_percent']=str(attendance_perc)+"%"
+    output['attendance_percent']=str(current_user.current_attendance_percentage)+"%"
     
     return output
 
@@ -600,7 +607,7 @@ def employee_details_select():
 @jwt_required()
 def employee_present():
     current_user = employee_details(get_jwt_identity())
-    #print("11...................",current_user)
+
     if current_user.validity == 0:
         return make_response(
         jsonify({'status' : 'User Logged Out..Need to Login'}),
