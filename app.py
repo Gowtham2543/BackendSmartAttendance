@@ -59,6 +59,16 @@ def employee_details(f):
     current_employee = Employee.query.filter_by(user_name=f).first()
     return current_employee
 
+@app.route("/update_server", methods=["POST"])
+def webhook():
+    if request.method == "POST":
+        repo = git.Repo('/home/crafty2543/BackendSmartAttendance')
+        origin = repo.remotes.origin
+        origin.pull()
+        return 'Updated PythonAnywhere successfully', 200
+    else:
+        return 'Wrong event type', 400
+
 
 #   Employee Atendance Entry By APSCHEDULER
 
