@@ -18,7 +18,6 @@ from flask_cors import CORS
 
 from dotenv import load_dotenv
 
-print(load_dotenv())
 
 
 # from apscheduler.schedulers.background import BackgroundScheduler
@@ -111,7 +110,6 @@ def webhook():
 #             db.session.delete(attendance_chk)
 #             db.session.commit()
         
-#         print("Attendance..Updated..!")
 
 # job = scheduler.add_job(employee_attendance, 'cron', hour='15', minute='10',second='00')
 
@@ -296,9 +294,6 @@ def employee_details_update():
         401)
         
     data = request.form
-    print(data)
-    print("Gowtham .....")
-    print(data.get('firstName'))
     if not data or not data.get('email') or not data.get('firstName') or not data.get('lastName') or not data.get('date') or not data.get('designation') or not data.get('age'):
         return make_response(
             jsonify({"status" : "Fields missing"}),
@@ -418,10 +413,8 @@ def employee_list():
     emp_list_size = len(emp_list)
 
     total_pages = int(emp_list_size/10)
-    #print("11...............",total_pages)
     if total_pages%10!=0 or total_pages==0:
         total_pages+=1
-    #print("22..................",total_pages)
     if total_pages<(page_number-1):
         return make_response(
             jsonify({"status" : "Page Limit Exceeded..!"}),
@@ -492,16 +485,13 @@ def employee_select():
         jsonify({'status' : 'User Logged Out..Need to Login'}),
         401)
     
-    #print(request.get_data())
     data = request.get_json()
-    print("***********",data)
     if not data or not data['employee_name'] or not data['designation']:
         return make_response(
             jsonify({"status" : "Fields missing"}),
             401)
         
     employee_details_search = Employee.query.filter_by(first_name=data['employee_name']).filter_by(designation=data['designation']).first()
-    print("*******",employee_details_search.id)
     if not employee_details_search:
         return make_response(
             jsonify({"status" : "No Match Found..!"}),
@@ -519,7 +509,6 @@ def employee_select():
     output['designation']=employee_details_search.designation
     output['attendance_percent']=str(employee_details_search.current_attendance_percentage)+"%"
     
-    print(output)
     return output
 
 
@@ -692,7 +681,6 @@ def employee_in():
     
     setattr(employee_chk_attendance,"in_time",str(datetime.now()))
     db.session.commit()
-    print(str(datetime.now()))
     if employee_chk_attendance.out_time != "":
         duration_left = Duration.duration_left(employee_chk_attendance.out_time,str(datetime.now()))
         setattr(employee_chk_attendance,"out_duration",employee_chk_attendance.out_duration + duration_left)
@@ -782,7 +770,7 @@ def attendance_entry():
             401)
 
     attendance_chk = Attendance.query.filter_by(employee_name=employee_name).filter_by(emp_id=emp_id).filter_by(day=attendance_date.day).filter_by(month=attendance_date.month).filter_by(year=attendance_date.year).first()
-    print(attendance_chk)    
+
     if attendance_chk:
         setattr(attendance_chk,"day_attendance",attendance)
         db.session.commit()
